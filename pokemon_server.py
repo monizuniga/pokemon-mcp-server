@@ -167,19 +167,9 @@ async def cleanup():
 
 
 if __name__ == "__main__":
-    # Run the MCP server
-    import sys
-    from mcp.server.stdio import stdio_server
-    
-    async def main():
-        async with stdio_server() as (read_stream, write_stream):
-            await mcp.run(
-                read_stream,
-                write_stream
-            )
-    
+    # Run the MCP server using stdio
     try:
-        asyncio.run(main())
+        asyncio.run(mcp.run_stdio_async())
     except KeyboardInterrupt:
         print("Server shutting down...")
     finally:
