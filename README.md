@@ -14,6 +14,7 @@ This MCP server provides the following tools:
 ## Setup
 
 1. **Create and activate virtual environment:**
+
    ```bash
    python3 -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
@@ -39,34 +40,43 @@ The server will start and listen for MCP protocol messages via stdio.
 ### Available Tools
 
 #### 1. Get Pokemon List
+
 ```python
 get_pokemon_list(limit=20, offset=0)
 ```
+
 - `limit`: Number of Pokemon to return (default: 20, max: 100)
 - `offset`: Number of Pokemon to skip (default: 0)
 
 #### 2. Get Pokemon Details by Name
+
 ```python
 get_pokemon_details(name="pikachu")
 ```
+
 - `name`: The name of the Pokemon (case-insensitive)
 
 #### 3. Get Pokemon Details by ID
+
 ```python
 get_pokemon_by_id(pokemon_id=25)
 ```
+
 - `pokemon_id`: The ID of the Pokemon (1 for Bulbasaur, 25 for Pikachu, etc.)
 
 #### 4. Search Pokemon
+
 ```python
 search_pokemon(query="char", limit=10)
 ```
+
 - `query`: Partial Pokemon name to search for
 - `limit`: Maximum number of results to return
 
 ## Example Responses
 
 ### Pokemon List
+
 ```json
 {
   "count": 1302,
@@ -78,7 +88,7 @@ search_pokemon(query="char", limit=10)
       "url": "https://pokeapi.co/api/v2/pokemon/1/"
     },
     {
-      "name": "ivysaur", 
+      "name": "ivysaur",
       "url": "https://pokeapi.co/api/v2/pokemon/2/"
     }
   ]
@@ -86,6 +96,7 @@ search_pokemon(query="char", limit=10)
 ```
 
 ### Pokemon Details
+
 ```json
 {
   "id": 25,
@@ -128,6 +139,7 @@ search_pokemon(query="char", limit=10)
 ## Error Handling
 
 The server includes proper error handling for:
+
 - Network timeouts and connection issues
 - Invalid Pokemon names or IDs
 - API rate limiting
@@ -144,3 +156,22 @@ Errors are returned as JSON with an "error" field containing the error message.
 ## License
 
 This project is open source and available under the MIT License.
+
+## MCP Pokemon Connector
+
+```
+{
+  "mcpServers": {
+    "pokemon": {
+      "command": "/Users/ricmor/Documents/work.nosync/pokemon-mcp-server/.venv/bin/python",
+      "args": [
+        "/Users/ricmor/Documents/work.nosync/pokemon-mcp-server/pokemon_server.py"
+      ],
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      },
+      "disabled": false
+    }
+  }
+}
+```

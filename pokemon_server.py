@@ -69,7 +69,7 @@ pokemon_api = PokemonAPI()
 
 
 @mcp.tool()
-def get_pokemon_list(limit: int = 20, offset: int = 0) -> str:
+async def get_pokemon_list(limit: int = 20, offset: int = 0) -> str:
     """
     Get a list of Pokemon with pagination support.
     
@@ -80,15 +80,12 @@ def get_pokemon_list(limit: int = 20, offset: int = 0) -> str:
     Returns:
         JSON string containing the list of Pokemon with their names and URLs
     """
-    async def _get_pokemon_list():
-        result = await pokemon_api.get_pokemon_list(limit=limit, offset=offset)
-        return json.dumps(result, indent=2)
-    
-    return asyncio.run(_get_pokemon_list())
+    result = await pokemon_api.get_pokemon_list(limit=limit, offset=offset)
+    return json.dumps(result, indent=2)
 
 
 @mcp.tool()
-def get_pokemon_details(name: str) -> str:
+async def get_pokemon_details(name: str) -> str:
     """
     Get detailed information about a specific Pokemon by name.
     
@@ -98,15 +95,12 @@ def get_pokemon_details(name: str) -> str:
     Returns:
         JSON string containing detailed Pokemon information including stats, abilities, types, etc.
     """
-    async def _get_pokemon_details():
-        result = await pokemon_api.get_pokemon_by_name(name)
-        return json.dumps(result, indent=2)
-    
-    return asyncio.run(_get_pokemon_details())
+    result = await pokemon_api.get_pokemon_by_name(name)
+    return json.dumps(result, indent=2)
 
 
 @mcp.tool()
-def get_pokemon_by_id(pokemon_id: int) -> str:
+async def get_pokemon_by_id(pokemon_id: int) -> str:
     """
     Get detailed information about a specific Pokemon by ID.
     
@@ -116,15 +110,12 @@ def get_pokemon_by_id(pokemon_id: int) -> str:
     Returns:
         JSON string containing detailed Pokemon information including stats, abilities, types, etc.
     """
-    async def _get_pokemon_by_id():
-        result = await pokemon_api.get_pokemon_by_id(pokemon_id)
-        return json.dumps(result, indent=2)
-    
-    return asyncio.run(_get_pokemon_by_id())
+    result = await pokemon_api.get_pokemon_by_id(pokemon_id)
+    return json.dumps(result, indent=2)
 
 
 @mcp.tool()
-def search_pokemon(query: str, limit: int = 10) -> str:
+async def search_pokemon(query: str, limit: int = 10) -> str:
     """
     Search for Pokemon by name (partial matching).
     
@@ -135,29 +126,26 @@ def search_pokemon(query: str, limit: int = 10) -> str:
     Returns:
         JSON string containing matching Pokemon names and their details
     """
-    async def _search_pokemon():
-        # First get a list of Pokemon
-        pokemon_list = await pokemon_api.get_pokemon_list(limit=1000, offset=0)
-        
-        if "error" in pokemon_list:
-            return json.dumps(pokemon_list, indent=2)
-        
-        # Filter Pokemon that match the query
-        query_lower = query.lower()
-        matching_pokemon = [
-            pokemon for pokemon in pokemon_list.get("results", [])
-            if query_lower in pokemon["name"].lower()
-        ][:limit]
-        
-        result = {
-            "query": query,
-            "matches": len(matching_pokemon),
-            "results": matching_pokemon
-        }
-        
-        return json.dumps(result, indent=2)
+    # First get a list of Pokemon
+    pokemon_list = await pokemon_api.get_pokemon_list(limit=1000, offset=0)
     
-    return asyncio.run(_search_pokemon())
+    if "error" in pokemon_list:
+        return json.dumps(pokemon_list, indent=2)
+    
+    # Filter Pokemon that match the query
+    query_lower = query.lower()
+    matching_pokemon = [
+        pokemon for pokemon in pokemon_list.get("results", [])
+        if query_lower in pokemon["name"].lower()
+    ][:limit]
+    
+    result = {
+        "query": query,
+        "matches": len(matching_pokemon),
+        "results": matching_pokemon
+    }
+    
+    return json.dumps(result, indent=2)
 
 
 # Cleanup function for graceful shutdown
@@ -169,17 +157,10 @@ async def cleanup():
 if __name__ == "__main__":
     # Run the MCP server
     import sys
-    from mcp.server.stdio import stdio_server
-    
-    async def main():
-        async with stdio_server() as (read_stream, write_stream):
-            await mcp.run(
-                read_stream,
-                write_stream
-            )
-    
     try:
-        asyncio.run(main())
+        # FastMCP.run uses AnyIO internally and manages its own event loop.
+        # Call it directly to avoid nesting event loops.
+        mcp.run(transport="stdio")
     except KeyboardInterrupt:
         print("Server shutting down...")
     finally:
