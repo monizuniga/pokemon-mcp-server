@@ -163,9 +163,9 @@ This project is open source and available under the MIT License.
 {
   "mcpServers": {
     "pokemon": {
-      "command": "/Users/ricmor/Documents/work.nosync/pokemon-mcp-server/.venv/bin/python",
+      "command": "path/to/venv/bin/python",
       "args": [
-        "/Users/ricmor/Documents/work.nosync/pokemon-mcp-server/pokemon_server.py"
+        "path/to/pokemon-mcp-server/pokemon_server.py"
       ],
       "env": {
         "PYTHONUNBUFFERED": "1"
